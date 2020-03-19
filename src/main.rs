@@ -1,21 +1,18 @@
+use gtfs_structures::Gtfs;
 use std::path::PathBuf;
 use structopt::StructOpt;
-use gtfs_structures::Gtfs;
-
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "basic")]
 
 struct Opt {
-
     // GTFS files
-    #[structopt(name = "fichier gtfs", parse(from_os_str))]
+    #[structopt(name = "gtfs", short, long, parse(from_os_str))]
     file: PathBuf,
 
     // Output file
-    #[structopt(name = "fichier geojson de sortie", short, long, parse(from_os_str))]
+    #[structopt(name = "json", short, long, parse(from_os_str))]
     output: PathBuf,
-
 }
 
 fn main() {
@@ -23,41 +20,42 @@ fn main() {
     println!("Fichier GTFS : {:#?}", opt.file);
     println!("Fichier de sortie : {:#?}", opt.output);
 
-    let gtfs = gtfs_structures::Gtfs::new(opt.file.to_str().unwrap()).expect("Le fichier GTFS n'est pas valable.");
+    let gtfs = Gtfs::new(opt.file.to_str().unwrap()).expect("The GTFS file is well formated.");
     println!("there are {} stops in the gtfs", gtfs.stops.len());
-    for () in gtfs.stops.iter() {
-        println!("Arrêt {:?} - {:?} - {:?}", stop.name ,stop.id, stop.code);
-        println!("{:?}", stop.description );
+    for stop in gtfs.stops.values() {
+        println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
+        println!("Description {:?}", stop.description);
 
-        match stop.parent_station {
-            Option::Some(String) => println!("{:?}", stop.parent_station),
-            Option::None         => println!("Pas de station parent."),
+        match &stop.parent_station {
+            Option::Some(parent) => println!("Parent station {:?}", parent),
+            Option::None => println!("No parent station"),
         }
 
-        match (stop.longitude, stop.latitude) {
-            Option::(Some(long),Some(lat)) => println!("{}°N, {}°E", long, lat),
-            _ => println("Pas de coordonnées pour cette station."),
+        match &stop.latitude {
+            Option::Some(lat) => println!("Latitude : {:?}", lat),
+            _ => println!("Latitude not set."),
         }
 
-        match stop.timezone {
-            Option::Some(tmz) => println("Fuseau horaire : {}", tmz ),
-            _                 => println("Pas de fuseau hoaire."),
+        match &stop.longitude {
+            Option::Some(long) => println!("Longitude : {:?}", long),
+            _ => println!("Longitude not set."),
         }
 
-        match stop.wheelchair_boarding {
-            Option::InformationNotAvailable(s) => println!("Accès PMA inconnu."),
-            Option::Available(s)    => println!("Accès PMA."),
-            Option::NotAvailable(s) => println!("Pas d'accès PMA."),
+        match &stop.timezone {
+            Option::Some(tmz) => println!("Timezone : {}", tmz),
+            _ => println!("No timezone set"),
+        }
+
+        match &stop.wheelchair_boarding {
+            gtfs_structures::Availability::InformationNotAvailable => {
+                println!("Handicaped access unknown.")
+            }
+            gtfs_structures::Availability::Available => println!("Handicaped access available"),
+            gtfs_structures::Availability::NotAvailable => {
+                println!("Handicaped access unavailable")
+            }
         }
 
         println!("------------------------------");
     }
 }
-
-// fn import_gtfs(&str path){
-//
-// }
-//
-// fn convert_to_geojson(gtfs_structures gt){
-//
-// }
