@@ -20,7 +20,7 @@ fn main() {
     println!("Fichier GTFS : {:#?}", opt.file);
     println!("Fichier de sortie : {:#?}", opt.output);
 
-    let gtfs = Gtfs::new(opt.file.to_str().unwrap()).expect("The GTFS file is well formated.");
+    let gtfs = Gtfs::new(opt.file.to_str().unwrap()).expect("The GTFS file is not well formated.");
     println!("there are {} stops in the gtfs", gtfs.stops.len());
     for stop in gtfs.stops.values() {
         println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
