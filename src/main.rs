@@ -31,14 +31,9 @@ fn main() {
             Option::None => println!("No parent station"),
         }
 
-        match &stop.latitude {
-            Option::Some(lat) => println!("Latitude : {:?}", lat),
-            _ => println!("Latitude not set."),
-        }
-
-        match &stop.longitude {
-            Option::Some(long) => println!("Longitude : {:?}", long),
-            _ => println!("Longitude not set."),
+        match (&stop.longitude, &stop.latitude) {
+          (Some(lon), Some(lat)) => println!("Coordinates: {};{}", lon, lat),
+          _ => println!("Coordinates not set"),
         }
 
         match &stop.timezone {
