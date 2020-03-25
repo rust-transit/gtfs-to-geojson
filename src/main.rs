@@ -17,8 +17,8 @@ struct Opt {
 
 fn main() {
     let opt = Opt::from_args();
-    println!("Fichier GTFS : {:#?}", opt.file);
-    println!("Fichier de sortie : {:#?}", opt.output);
+    println!("GTFS input file: {:#?}", opt.file);
+    println!("GeoJSON output filename: {:#?}", opt.output);
 
     let gtfs = Gtfs::new(opt.file.to_str().unwrap()).expect("The GTFS file is not well formated.");
     println!("there are {} stops in the gtfs", gtfs.stops.len());
