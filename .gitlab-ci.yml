@@ -1,0 +1,40 @@
+image: 'rust:latest'
+
+stages:
+  - test
+  - build
+  - format
+  - clippy
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/cargo
+
+test:
+  stage: test
+  script:
+      - rustc --version
+      - cargo --version
+      - cargo test --verbose
+
+build:
+  stage: build
+  script:
+      - rustc --version
+      - cargo --version
+      - cargo build
+
+format:
+  stage: format
+  script:
+    - cargo fmt --all --verbose -- --write-mode=diff
+
+clippy:
+  stage: clippy
+  script:
+      - cargo clippy --all --verbose -- -D warnings
+
+cache:
+  paths:
+    - apt/
+    - cargo/
+    - target/
