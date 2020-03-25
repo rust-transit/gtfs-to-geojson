@@ -1,6 +1,7 @@
 image: 'rust:latest'
 
 stages:
+  - install
   - build
   - test
   - format
@@ -8,6 +9,11 @@ stages:
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
+
+install:
+    stage: install
+    script:
+        - rustup component add rustfmt --toolchain 1.42.0-x86_64-unknown-linux-gnu
 
 test:
   stage: test
