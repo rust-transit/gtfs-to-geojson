@@ -19,9 +19,10 @@ fn main() {
     let opt = Opt::from_args();
     println!("GTFS input file: {:#?}", opt.file);
     println!("GeoJSON output filename: {:#?}", opt.output);
+    println!("");
 
     let gtfs = Gtfs::new(opt.file.to_str().unwrap()).expect("The GTFS file is not well formated.");
-    println!("there are {} stops in the gtfs", gtfs.stops.len());
+    println!("They are {} stops in the gtfs", gtfs.stops.len());
     for stop in gtfs.stops.values() {
         println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
         println!("Description {:?}", stop.description);
@@ -32,8 +33,8 @@ fn main() {
         }
 
         match (&stop.longitude, &stop.latitude) {
-          (Some(lon), Some(lat)) => println!("Coordinates: {};{}", lon, lat),
-          _ => println!("Coordinates not set"),
+            (Some(lon), Some(lat)) => println!("Coordinates: {};{}", lon, lat),
+            _ => println!("Coordinates not set"),
         }
 
         match &stop.timezone {
