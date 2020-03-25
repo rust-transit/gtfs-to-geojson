@@ -1,8 +1,8 @@
 image: 'rust:latest'
 
 stages:
-  - test
   - build
+  - test
   - format
   - clippy
 
@@ -26,7 +26,7 @@ build:
 format:
   stage: format
   script:
-    - cargo fmt --all --verbose -- --write-mode=diff
+    - cargo-fmt --all --verbose -- --write-mode=diff
 
 clippy:
   stage: clippy
