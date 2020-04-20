@@ -413,10 +413,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "geojson"
-version = "0.17.0"
+name = "geo-types"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4ac03428b3276fc7f1756eba0c76c7c0c91ef77e1c43fbdd47a460238419cb9"
+checksum = "e0ff051e4c51366601441053c37acf84958a795d350fdc02a53a31717f9bae2d"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
+name = "geojson"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2b6970b36b77807a4ea232fcbc13b29026eab7c7e906500446c1e03d16f43af"
 dependencies = [
  "num-traits",
  "serde",
@@ -438,8 +447,10 @@ dependencies = [
 name = "gtfs-geojson"
 version = "0.1.0"
 dependencies = [
+ "geo-types",
  "geojson",
  "gtfs-structures",
+ "serde_json",
  "structopt",
 ]
 
@@ -1112,9 +1123,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.48"
+version = "1.0.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9371ade75d4c2d6cb154141b9752cf3781ec9c05e0e5cf35060e1e70ee7b9c25"
+checksum = "78a7a12c167809363ec3bd7329fc0a3369056996de43c4b37ef3cd54a6ce4867"
 dependencies = [
  "itoa",
  "ryu",
