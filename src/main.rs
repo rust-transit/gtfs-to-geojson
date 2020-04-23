@@ -140,7 +140,8 @@ fn main() {
             .expect("Invalid file path. Could not convert to string."),
     )
     .expect("The GTFS file is not well formated.");
-    print_stops(&gtfs);
+
+    // print_stops(&gtfs);
 
     if opt.verbose {
         println!("Converting the stops to Geotype structures...");
@@ -149,4 +150,51 @@ fn main() {
     let stops_as_features = convert_to_geojson(&gtfs, opt.verbose);
 
     save_to_file(&stops_as_features, &opt.output);
+}
+
+#[test]
+fn simple_conversion() {
+    // read a gtfs
+    let gtfs = Gtfs::new("gtfs_46.zip").unwrap();
+    let geojson = convert_to_geojson(&gtfs, false);
+
+    // Make sure that we have as many fields as in the GTFS
+    assert_eq!(geojson.features.len(), gtfs.stops.len());
+
+    // Make sure that for every element of the geojson,
+    // we have the same..
+
+    // name
+    assert_eq!(gtfs.stops.values().nth(0).name
+                ,
+                geojson.features.first()
+                    .filter_map(|o| match o {
+                        Some(f) => f,
+                        None => None
+                    })
+                    .properties
+                    .filter_map(|o| match o {
+                        Some(info) => info,
+                        None => None
+                    })
+                    .get("name")
+                );
+    // id
+
+    // code
+
+    // description
+
+    // parent station
+
+    // timezone
+
+    // wheelchair boarding
+
+
+    // assert_ne!(gtfs_first_stop,None);
+
+    // assert_eq!(geojson.features.first().to_string(), gtfs.stops.get(&1).to_string());
+    // Make sure that if something is missing, it doesn't cause an invalid GeoJSON
+
 }
