@@ -7,7 +7,6 @@ use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "basic")]
-
 struct Opt {
     // GTFS files
     #[structopt(name = "gtfs", short, long, parse(from_os_str))]
@@ -61,82 +60,69 @@ fn print_stops(gtfs_data: &Gtfs) {
 }
 
 fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
-    // For every stop
-    // We create a geo_types::Point
-    // We add it to a geojson::Feature as the .geometry field
-    // We also create a Map<String, JsonValue>, added to the .properties filed
-    // of the geojson::Feature.
-    // We .push that geojson::Feature to the FeatureCollection,
+    let features = gtfs_data
+        .stops
+        .values()
+        .map(|stop| {
+            if verbose {
+                println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
+                println!("Description {:?}", stop.description);
+            }
 
-    // Return
+            let info = vec![
+                ("name", Some(stop.name.clone().into())),
+                ("id", Some(stop.id.clone().into())),
+                ("description", Some(stop.description.clone().into())),
+                ("code", stop.code.as_ref().map(|code| code.clone().into())),
+                (
+                    "parent_station",
+                    stop.parent_station
+                        .as_ref()
+                        .map(|parent| parent.clone().into()),
+                ),
+                (
+                    "timezone",
+                    stop.timezone.as_ref().map(|tz| tz.clone().into()),
+                ),
+                (
+                    "wheelchair_boarding",
+                    Some(match &stop.wheelchair_boarding {
+                        gtfs_structures::Availability::InformationNotAvailable => "unknown".into(),
+                        gtfs_structures::Availability::Available => "available".into(),
+                        gtfs_structures::Availability::NotAvailable => "not available".into(),
+                    }),
+                ),
+            ]
+            .into_iter()
+            .filter_map(|(key, value)| match value {
+                None => None,
+                Some(v) => Some((key.to_string(), v)),
+            })
+            .collect::<Map<String, serde_json::Value>>();
+            // Add the geometry values
+            Feature {
+                geometry: match (&stop.longitude, &stop.latitude) {
+                    (Some(lon), Some(lat)) => Some(Geometry::new(Value::Point(vec![*lon, *lat]))),
+                    _ => None,
+                },
+                id: None,
+                bbox: None,
+                properties: Some(info),
+                foreign_members: None,
+            }
+        })
+        .collect();
 
-    let mut stops_features = FeatureCollection {
+    FeatureCollection {
         bbox: None,
-        features: vec![],
+        features,
         foreign_members: None,
-    };
-
-    for stop in gtfs_data.stops.values() {
-        let mut stop_info = Map::new();
-        if verbose {
-            println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
-            println!("Description {:?}", stop.description);
-        }
-
-        // Build the info of the stop
-        stop_info.insert("name".to_string(), stop.name.to_string().into());
-        stop_info.insert("id".to_string(), stop.id.to_string().into());
-        stop_info.insert(
-            "description".to_string(),
-            stop.description.to_string().into(),
-        );
-
-        match &stop.code {
-            Option::Some(code) => stop_info.insert("code".to_string(), code.to_string().into()),
-            Option::None => None,
-        };
-
-        match &stop.parent_station {
-            Option::Some(parent) => {
-                stop_info.insert("parent_station".to_string(), parent.to_string().into())
-            }
-            Option::None => None,
-        };
-
-        match &stop.timezone {
-            Option::Some(tmz) => stop_info.insert("timezone".to_string(), tmz.to_string().into()),
-            _ => None,
-        };
-
-        match &stop.wheelchair_boarding {
-            gtfs_structures::Availability::InformationNotAvailable => {
-                stop_info.insert("wheelchair_boarding".to_string(), "unknown".into());
-            }
-            gtfs_structures::Availability::Available => {
-                stop_info.insert("wheelchair_boarding".to_string(), "available".into());
-            }
-            gtfs_structures::Availability::NotAvailable => {
-                stop_info.insert("wheelchair_boarding".to_string(), "not available".into());
-            }
-        };
-
-        // Add the geometry values
-        stops_features.features.push(Feature {
-            geometry: match (&stop.longitude, &stop.latitude) {
-                (Some(lon), Some(lat)) => Some(Geometry::new(Value::Point(vec![*lon, *lat]))),
-                _ => None,
-            },
-            id: None,
-            bbox: None,
-            properties: Some(stop_info),
-            foreign_members: None,
-        });
     }
-
-    return stops_features;
 }
 
 fn save_to_file(geotype_collection: &FeatureCollection, filename_geo: &PathBuf) {
+    println!("{}", geotype_collection);
+
     fs::write(filename_geo, geotype_collection.to_string()).expect("Unable to write file");
 }
 
