@@ -1,12 +1,8 @@
 use std::fs;
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use gtfs_structures::Gtfs;
-<<<<<<< HEAD
 use serde_json::{json, Map};
 use std::fs;
-=======
-use serde_json::Map;
->>>>>>> 5a8058f... Updated tests
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -163,7 +159,6 @@ fn main() {
 }
 
 #[test]
-<<<<<<< HEAD
 fn with_code_test() {
     let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
@@ -172,46 +167,6 @@ fn with_code_test() {
         .features
         .into_iter()
         .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop2"));
-=======
-// This test aims to make sure that the GTFS and the GeoJson files are equivalent.
-fn simple_conversion() {
-    // read a gtfs
-    let gtfs = Gtfs::new("gtfs_46.zip").unwrap();
-    let geojson = convert_to_geojson(&gtfs, false);
-
-    // Make sure that we have as many fields as in the GTFS
-    assert_eq!(geojson.features.len(), gtfs.stops.len());
-
-    // Make sure that for every element of the geojson,
-    // we have the same..
-
-    // name
-    let gtfs_name = &gtfs.stops.values().nth(0)
-                        .expect("The GTFS does not have a name")
-                        .name;
-
-
-    let geojson_name = geojson.features
-                        .first()
-                        .expect("The GeoJson feature does not exist")
-                        .properties
-                        .as_ref()
-                        .expect("The property has no information")
-                        .get("name")
-                        .expect("Name has no value")
-                        .as_str()
-                        .expect("Name is not a string");
-
-    assert_eq!( gtfs_name, geojson_name);
-
-    // id
-
-    // code
-
-    // description
-
-    // parent station
->>>>>>> 5a8058f... Updated tests
 
     assert_eq!(
         json!(given_feature.as_ref().unwrap().properties),
