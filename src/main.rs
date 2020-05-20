@@ -1,7 +1,7 @@
+use std::fs;
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use gtfs_structures::Gtfs;
 use serde_json::Map;
-use std::fs;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -141,7 +141,9 @@ fn main() {
     )
     .expect("The GTFS file is not well formated.");
 
-    // print_stops(&gtfs);
+    if opt.verbose {
+        print_stops(&gtfs);
+    }
 
     if opt.verbose {
         println!("Converting the stops to Geotype structures...");
@@ -153,6 +155,7 @@ fn main() {
 }
 
 #[test]
+// This test aims to make sure that the GTFS and the GeoJson files are equivalent.
 fn simple_conversion() {
     // read a gtfs
     let gtfs = Gtfs::new("gtfs_46.zip").unwrap();
@@ -165,20 +168,24 @@ fn simple_conversion() {
     // we have the same..
 
     // name
-    assert_eq!(gtfs.stops.values().nth(0).name
-                ,
-                geojson.features.first()
-                    .filter_map(|o| match o {
-                        Some(f) => f,
-                        None => None
-                    })
-                    .properties
-                    .filter_map(|o| match o {
-                        Some(info) => info,
-                        None => None
-                    })
-                    .get("name")
-                );
+    let gtfs_name = &gtfs.stops.values().nth(0)
+                        .expect("The GTFS does not have a name")
+                        .name;
+
+
+    let geojson_name = geojson.features
+                        .first()
+                        .expect("The GeoJson feature does not exist")
+                        .properties
+                        .as_ref()
+                        .expect("The property has no information")
+                        .get("name")
+                        .expect("Name has no value")
+                        .as_str()
+                        .expect("Name is not a string");
+
+    assert_eq!( gtfs_name, geojson_name);
+
     // id
 
     // code
@@ -197,4 +204,10 @@ fn simple_conversion() {
     // assert_eq!(geojson.features.first().to_string(), gtfs.stops.get(&1).to_string());
     // Make sure that if something is missing, it doesn't cause an invalid GeoJSON
 
+}
+
+#[test]
+#[should_panic]
+fn simple_conversion_panic(){
+    panic!("Whoops");
 }
