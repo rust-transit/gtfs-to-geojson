@@ -1,5 +1,4 @@
 //! This crates aims to be a simple converter for GTFS to GeoJSON formats.
-//! Written by Nelson Perdriau <social@n07070.xyz>
 
 use gtfs_structures::Gtfs;
 use serde_json::{json};
