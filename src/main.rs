@@ -10,19 +10,28 @@ use structopt::StructOpt;
 #[structopt(name = "basic")]
 struct Opt {
     // GTFS files
-    #[structopt(name = "gtfs", short, long, parse(from_os_str))]
+    #[structopt(
+        name = "gtfs",
+        short = "i",
+        long = "input",
+        help = "Path to the gtfs file. Can be a directory or a zip file",
+        parse(from_os_str)
+    )]
     file: PathBuf,
 
     // Output file
-    #[structopt(name = "json", short, long, parse(from_os_str))]
+    #[structopt(
+        name = "json",
+        short = "o",
+        long = "output",
+        help = "Filename of the outputed json data. Doesn't need to exist beforehand. All existing data will be removed.",
+        parse(from_os_str)
+    )]
     output: PathBuf,
 
     // To be verbose about what's going on.
-    #[structopt(name = "verbose", short, long)]
+    #[structopt(name = "verbose", short = "v", long = "verbose")]
     verbose: bool,
-
-    #[structopt(name = "print-only", short, long)]
-    print_only: bool,
 }
 
 pub mod converter {
