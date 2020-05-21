@@ -1,7 +1,7 @@
-use std::fs;
-use geojson::{Feature, FeatureCollection, Geometry, Value};
+//! This crates aims to be a simple converter for GTFS to GeoJSON formats.
+//! Written by Nelson Perdriau <social@n07070.xyz>
+
 use gtfs_structures::Gtfs;
-use serde_json::Map;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -24,42 +24,14 @@ struct Opt {
     print_only: bool,
 }
 
-fn print_stops(gtfs_data: &Gtfs) {
-    println!("They are {} stops in the gtfs", gtfs_data.stops.len());
+pub mod converter {
+    use gtfs_structures::Gtfs;
+    use geojson::{Feature, FeatureCollection};
+    use serde_json::Map;
+    use geojson::Value::Point;
 
-    for stop in gtfs_data.stops.values() {
-        println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
-        println!("Description {:?}", stop.description);
 
-        match &stop.parent_station {
-            Option::Some(parent) => println!("Parent station {:?}", parent),
-            Option::None => println!("No parent station"),
-        }
-
-        match (&stop.longitude, &stop.latitude) {
-            (Some(lon), Some(lat)) => println!("Coordinates: {};{}", lon, lat),
-            _ => println!("Coordinates not set"),
-        }
-
-        match &stop.timezone {
-            Option::Some(tmz) => println!("Timezone : {}", tmz),
-            _ => println!("No timezone set"),
-        }
-
-        match &stop.wheelchair_boarding {
-            gtfs_structures::Availability::InformationNotAvailable => {
-                println!("Handicaped access unknown.")
-            }
-            gtfs_structures::Availability::Available => println!("Handicaped access available"),
-            gtfs_structures::Availability::NotAvailable => {
-                println!("Handicaped access unavailable")
-            }
-        }
-        println!("------------------------------");
-    }
-}
-
-fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
+    pub fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
     let features = gtfs_data
         .stops
         .values()
@@ -102,7 +74,7 @@ fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
             // Add the geometry values
             Feature {
                 geometry: match (&stop.longitude, &stop.latitude) {
-                    (Some(lon), Some(lat)) => Some(Geometry::new(Value::Point(vec![*lon, *lat]))),
+                    (Some(lon), Some(lat)) => Some(geojson::Geometry::new(Point(vec![*lon, *lat]))),
                     _ => None,
                 },
                 id: None,
@@ -119,14 +91,62 @@ fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
         foreign_members: None,
     }
 }
+}
 
-fn save_to_file(geotype_collection: &FeatureCollection, filename_geo: &PathBuf) {
+pub mod utility {
+    use std::path::PathBuf;
+    use geojson::FeatureCollection;
+    use gtfs_structures::Gtfs;
+    use std::fs;
+
+
+    pub fn print_stops(gtfs_data: &Gtfs) {
+        println!("They are {} stops in the gtfs", gtfs_data.stops.len());
+
+        for stop in gtfs_data.stops.values() {
+            println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
+            println!("Description {:?}", stop.description);
+
+            match &stop.parent_station {
+                Option::Some(parent) => println!("Parent station {:?}", parent),
+                Option::None => println!("No parent station"),
+            }
+
+            match (&stop.longitude, &stop.latitude) {
+                (Some(lon), Some(lat)) => println!("Coordinates: {};{}", lon, lat),
+                _ => println!("Coordinates not set"),
+            }
+
+            match &stop.timezone {
+                Option::Some(tmz) => println!("Timezone : {}", tmz),
+                _ => println!("No timezone set"),
+            }
+
+            match &stop.wheelchair_boarding {
+                gtfs_structures::Availability::InformationNotAvailable => {
+                    println!("Handicaped access unknown.")
+                }
+                gtfs_structures::Availability::Available => println!("Handicaped access available"),
+                gtfs_structures::Availability::NotAvailable => {
+                    println!("Handicaped access unavailable")
+                }
+            }
+            println!("------------------------------");
+        }
+    }
+
+    pub fn save_to_file(geotype_collection: &FeatureCollection, filename_geo: &PathBuf) {
     println!("{}", geotype_collection);
 
     fs::write(filename_geo, geotype_collection.to_string()).expect("Unable to write file");
 }
+}
 
 fn main() {
+
+    use crate::utility::{save_to_file, print_stops};
+    use crate::converter::convert_to_geojson;
+
     let opt = Opt::from_args();
 
     if opt.verbose {
