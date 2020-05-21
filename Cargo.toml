@@ -3,6 +3,8 @@ name = "gtfs-geojson"
 version = "0.1.0"
 authors = ["N07070 <social@n07070.xyz>"]
 edition = "2018"
+description = "A simple converter for GTFS to GeoJSON formats"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
