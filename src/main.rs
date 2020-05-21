@@ -26,10 +26,10 @@ struct Opt {
 }
 
 pub mod converter {
-    use gtfs_structures::Gtfs;
-    use geojson::{Feature, FeatureCollection};
-    use serde_json::Map;
     use geojson::Value::Point;
+    use geojson::{Feature, FeatureCollection};
+    use gtfs_structures::Gtfs;
+    use serde_json::Map;
 
     /// This function will take a GTFS data format and ouput a FeatureCollection, which can in turn, be printed by the utility module.
     /// If the verbose argument if True, then it will also print each step of conversion.
@@ -39,72 +39,77 @@ pub mod converter {
     /// convert_to_geojson(gtfs_data, true);
     /// ```
     pub fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
-    let features = gtfs_data
-        .stops
-        .values()
-        .map(|stop| {
-            if verbose {
-                println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
-                println!("Description {:?}", stop.description);
-            }
+        // Convert the stops of the GTFS by mapping each field
+        let features = gtfs_data
+            .stops
+            .values()
+            .map(|stop| {
+                if verbose {
+                    println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
+                    println!("Description {:?}", stop.description);
+                }
 
-            let info = vec![
-                ("name", Some(stop.name.clone().into())),
-                ("id", Some(stop.id.clone().into())),
-                ("description", Some(stop.description.clone().into())),
-                ("code", stop.code.as_ref().map(|code| code.clone().into())),
-                (
-                    "parent_station",
-                    stop.parent_station
-                        .as_ref()
-                        .map(|parent| parent.clone().into()),
-                ),
-                (
-                    "timezone",
-                    stop.timezone.as_ref().map(|tz| tz.clone().into()),
-                ),
-                (
-                    "wheelchair_boarding",
-                    Some(match &stop.wheelchair_boarding {
-                        gtfs_structures::Availability::InformationNotAvailable => "unknown".into(),
-                        gtfs_structures::Availability::Available => "available".into(),
-                        gtfs_structures::Availability::NotAvailable => "not available".into(),
-                    }),
-                ),
-            ]
-            .into_iter()
-            .filter_map(|(key, value)| match value {
-                None => None,
-                Some(v) => Some((key.to_string(), v)),
+                let info = vec![
+                    ("name", Some(stop.name.clone().into())),
+                    ("id", Some(stop.id.clone().into())),
+                    ("description", Some(stop.description.clone().into())),
+                    ("code", stop.code.as_ref().map(|code| code.clone().into())),
+                    (
+                        "parent_station",
+                        stop.parent_station
+                            .as_ref()
+                            .map(|parent| parent.clone().into()),
+                    ),
+                    (
+                        "timezone",
+                        stop.timezone.as_ref().map(|tz| tz.clone().into()),
+                    ),
+                    (
+                        "wheelchair_boarding",
+                        Some(match &stop.wheelchair_boarding {
+                            gtfs_structures::Availability::InformationNotAvailable => {
+                                "unknown".into()
+                            }
+                            gtfs_structures::Availability::Available => "available".into(),
+                            gtfs_structures::Availability::NotAvailable => "not available".into(),
+                        }),
+                    ),
+                ]
+                .into_iter()
+                .filter_map(|(key, value)| match value {
+                    None => None,
+                    Some(v) => Some((key.to_string(), v)),
+                })
+                .collect::<Map<String, serde_json::Value>>();
+                // Add the geometry values
+                Feature {
+                    geometry: match (&stop.longitude, &stop.latitude) {
+                        (Some(lon), Some(lat)) => {
+                            Some(geojson::Geometry::new(Point(vec![*lon, *lat])))
+                        }
+                        _ => None,
+                    },
+                    id: None,
+                    bbox: None,
+                    properties: Some(info),
+                    foreign_members: None,
+                }
             })
-            .collect::<Map<String, serde_json::Value>>();
-            // Add the geometry values
-            Feature {
-                geometry: match (&stop.longitude, &stop.latitude) {
-                    (Some(lon), Some(lat)) => Some(geojson::Geometry::new(Point(vec![*lon, *lat]))),
-                    _ => None,
-                },
-                id: None,
-                bbox: None,
-                properties: Some(info),
-                foreign_members: None,
-            }
-        })
-        .collect();
+            .collect();
 
-    FeatureCollection {
-        bbox: None,
-        features,
-        foreign_members: None,
+        FeatureCollection {
+            bbox: None,
+            features,
+            foreign_members: None,
+        }
     }
-}
 }
 
 pub mod utility {
-    use std::path::PathBuf;
     use geojson::FeatureCollection;
     use gtfs_structures::Gtfs;
     use std::fs;
+    use std::path::PathBuf;
 
     /// This function will print all of the stops contained in the GTFS file
     /// # Examples
@@ -156,16 +161,14 @@ pub mod utility {
     /// save_to_file(geotype_collection , path);
     /// ```
     pub fn save_to_file(geotype_collection: &FeatureCollection, filename_geo: &PathBuf) {
-    println!("{}", geotype_collection);
-
-    fs::write(filename_geo, geotype_collection.to_string()).expect("Unable to write file");
-}
+        println!("{}", geotype_collection);
+        fs::write(filename_geo, geotype_collection.to_string()).expect("Unable to write file");
+    }
 }
 
 fn main() {
-
-    use crate::utility::{save_to_file, print_stops};
     use crate::converter::convert_to_geojson;
+    use crate::utility::{print_stops, save_to_file};
 
     let opt = Opt::from_args();
 
