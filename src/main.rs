@@ -31,7 +31,13 @@ pub mod converter {
     use serde_json::Map;
     use geojson::Value::Point;
 
-
+    /// This function will take a GTFS data format and ouput a FeatureCollection, which can in turn, be printed by the utility module.
+    /// If the verbose argument if True, then it will also print each step of conversion.
+    /// # Examples
+    /// ```
+    /// let gtfs_data = Gtfs::new("tests/gtfs/gtfs_46.zip");
+    /// convert_to_geojson(gtfs_data, true);
+    /// ```
     pub fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
     let features = gtfs_data
         .stops
@@ -100,7 +106,13 @@ pub mod utility {
     use gtfs_structures::Gtfs;
     use std::fs;
 
-
+    /// This function will print all of the stops contained in the GTFS file
+    /// # Examples
+    /// ```
+    /// let gtfs_data = Gtfs::new("tests/gtfs/gtfs_46.zip");
+    /// print_stops(gtfs_data);
+    /// ```
+    ///
     pub fn print_stops(gtfs_data: &Gtfs) {
         println!("They are {} stops in the gtfs", gtfs_data.stops.len());
 
@@ -136,6 +148,13 @@ pub mod utility {
         }
     }
 
+    /// This function will save the FeatureCollection as a JSON output in the file given to it.
+    /// # Examples
+    /// ```
+    /// let geotype_collection = FeatureCollection::new();
+    /// let path = PathBuf::new();
+    /// save_to_file(geotype_collection , path);
+    /// ```
     pub fn save_to_file(geotype_collection: &FeatureCollection, filename_geo: &PathBuf) {
     println!("{}", geotype_collection);
 
