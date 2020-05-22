@@ -219,9 +219,3 @@ fn no_code_test() {
         )
     );
 }
-
-#[test]
-#[should_panic]
-fn simple_conversion_panic() {
-    panic!("Whoops");
-}
