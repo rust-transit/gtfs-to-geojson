@@ -1,6 +1,6 @@
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use gtfs_structures::Gtfs;
-use serde_json::Map;
+use serde_json::{Map,json};
 use std::fs;
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -28,6 +28,9 @@ fn print_stops(gtfs_data: &Gtfs) {
     println!("They are {} stops in the gtfs", gtfs_data.stops.len());
 
     for stop in gtfs_data.stops.values() {
+        if stop.code != None {
+            println!("\n\n\n")
+        }
         println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
         println!("Description {:?}", stop.description);
 
@@ -158,7 +161,7 @@ fn main() {
 // This test aims to make sure that the GTFS and the GeoJson files are equivalent.
 fn simple_conversion() {
     // read a gtfs
-    let gtfs = Gtfs::new("test/gtfs/gtfs.zip").unwrap();
+    let gtfs = Gtfs::new("test/gtfs/gtfs/").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
 
     let default_err = String::from("Errrrrrr");
@@ -167,7 +170,9 @@ fn simple_conversion() {
     let first_gtfs = &gtfs
         .stops
         .values()
-        .nth(0);
+        .nth(0)
+        .expect("The GTFS does not have a first value");
+
     let first_geojson = geojson
         .features
         .first()
@@ -181,72 +186,23 @@ fn simple_conversion() {
 
     // Make sure that for every element of the geojson, we have the same..
     // name
-    let gtfs_name = &first_gtfs.expect("The GTFS does not have a name").name;
-
-    let geojson_name = first_geojson
-        .get("name")
-        .expect("Name has no value")
-        .as_str()
-        .expect("Name is not a string");
-
-    assert_eq!(gtfs_name, geojson_name);
+    assert_eq!(json!(&first_gtfs.name), first_geojson["name"]);
 
     // id
-    let gtfs_id = &first_gtfs.expect("The GTFS does not have a name").id;
-    let geojson_id = first_geojson
-        .get("id")
-        .expect("Id has no value")
-        .as_str()
-        .expect("Name is not a string");
-
-    assert_eq!(gtfs_id, geojson_id);
+    assert_eq!(json!(&first_gtfs.id), first_geojson["id"]);
 
     // code
-    let gtfs_code = &first_gtfs
-        .expect("The GTFS does not have a name")
-        .code
-        .as_ref()
-        .unwrap()
-        .as_str();
-    let geojson_code = &first_geojson
-        .get("code")
-        .unwrap()
-        .as_str()
-        .expect("code is not a string");
-
-    assert_eq!(gtfs_code, geojson_code);
+    assert_eq!(json!(&first_gtfs.code), first_geojson["code"]);
 
     // description
-    let gtfs_descrip = &first_gtfs
-        .expect("The GTFS does not have a name")
-        .description;
-    let geojson_descrip = first_geojson
-        .get("description")
-        .expect("description has no value")
-        .as_str()
-        .expect("description is not a string");
-
-    assert_eq!(gtfs_descrip, geojson_descrip);
+    assert_eq!(json!(&first_gtfs.description), first_geojson["description"]);
 
     // parent station
-    let gtfs_parent_station = &first_gtfs
-        .expect("The GTFS does not have a name")
-        .parent_station
-        .as_ref()
-        .unwrap_or(&default_err)
-        .as_str();
+    assert_eq!(json!(&first_gtfs.parent_station), first_geojson["parent_station"]);
 
-    let geojson_parent_station = first_geojson
-        .get("parent_station")
-        .unwrap_or(&default_err_value)
-        .as_str()
-        .expect("description is not a string");
-
-    assert_eq!(gtfs_parent_station, &geojson_parent_station);
 
     //longitude and latitude
     let gtfs_lat = &first_gtfs
-        .expect("The GTFS does not have a name")
         .latitude
         .as_ref()
         .unwrap();
@@ -266,7 +222,6 @@ fn simple_conversion() {
     assert_eq!(gtfs_lat, &&geojson_lat_val[1]);
 
     let gtfs_long = &first_gtfs
-        .expect("The GTFS does not have a name")
         .longitude
         .as_ref()
         .unwrap();
@@ -288,24 +243,11 @@ fn simple_conversion() {
     assert_eq!(gtfs_long, &&geojson_long_val[0]);
 
     // timezone
-    let gtfs_tz = &first_gtfs
-        .expect("The GTFS does not have a name")
-        .timezone
-        .as_ref()
-        .unwrap_or(&default_err)
-        .as_str();
+    assert_eq!(json!(&first_gtfs.timezone), first_geojson["timezone"]);
 
-    let geojson_tz = first_geojson
-        .get("timezone")
-        .unwrap_or(&default_err_value)
-        .as_str()
-        .expect("description is not a string");
-
-    assert_eq!(gtfs_tz, &geojson_tz);
 
     // wheelchair boarding
     let gtfs_wheelchair = &first_gtfs
-        .expect("The GTFS does not have a name")
         .wheelchair_boarding;
 
     let gtfs_wheelchair_val = match gtfs_wheelchair {
@@ -314,11 +256,6 @@ fn simple_conversion() {
         gtfs_structures::Availability::NotAvailable => "not available",
     };
 
-    let geojson_wheelchair = first_geojson
-        .get("wheelchair_boarding")
-        .unwrap_or(&default_err_value)
-        .as_str()
-        .expect("description is not a string");
 
-    assert_eq!(gtfs_wheelchair_val, geojson_wheelchair);
+    assert_eq!(gtfs_wheelchair_val, first_geojson["wheelchair_boarding"]);
 }
