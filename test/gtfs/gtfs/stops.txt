@@ -1,6 +1,6 @@
 stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,stop_timezone,wheelchair_boarding
-S00093,,"ALBAS - ALBAS-Rivière Haute","",44.47342,1.251495,,,1,,,
-S00094,,"ALBAS - ALBAS-Rivière Basse","",44.483124,1.22927,,,1,,,
+S00093,1111,"ALBAS - ALBAS-Rivière Haute","",44.47342,1.251495,,,1,,,
+S00094,00,"ALBAS - ALBAS-Rivière Basse","",44.483124,1.22927,,,1,,,
 S00095,,"ALBAS - ALBAS-Bourg","",44.46837,1.236478,,,1,,,
 S00198,,"PUY-L'EVEQUE - PUY-L'EVEQUE-Place du Rampeau","",44.503661,1.13938,,,1,,,
 S00199,,"PUY-L'EVEQUE - PUY-L'EVEQUE-Place des platanes","",44.502296,1.141007,,,1,,,

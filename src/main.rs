@@ -157,6 +157,106 @@ fn main() {
     save_to_file(&stops_as_features, &opt.output);
 }
 
+// #[test]
+// // This test aims to make sure that the GTFS and the GeoJson files are equivalent.
+// fn simple_conversion() {
+//     // read a gtfs
+//     let gtfs = Gtfs::new("test/gtfs/gtfs/").unwrap();
+//     let geojson = convert_to_geojson(&gtfs, false);
+//
+//     let first_gtfs = &gtfs
+//         .stops
+//         .values()
+//         .nth(0)
+//         .expect("The GTFS does not have a first value");
+//
+//     let first_geojson = geojson
+//         .features
+//         .first()
+//         .expect("The GeoJson feature does not exist")
+//         .properties
+//         .as_ref()
+//         .expect("The property has no information");
+//
+//     // Make sure that we have as many fields as in the GTFS
+//     assert_eq!(geojson.features.len(), gtfs.stops.len());
+//
+//     // Make sure that for every element of the geojson, we have the same..
+//     // name
+//     assert_eq!(json!(&first_gtfs.name), first_geojson["name"]);
+//
+//     // id
+//     assert_eq!(json!(&first_gtfs.id), first_geojson["id"]);
+//
+//     // code
+//     assert_eq!(json!(&first_gtfs.code), first_geojson["code"]);
+//
+//     // description
+//     assert_eq!(json!(&first_gtfs.description), first_geojson["description"]);
+//
+//     // parent station
+//     assert_eq!(json!(&first_gtfs.parent_station), first_geojson["parent_station"]);
+//
+//
+//     //longitude and latitude
+//     let gtfs_lat = &first_gtfs
+//         .latitude
+//         .as_ref()
+//         .unwrap();
+//     let geojson_lat = &geojson.features
+//             .first()
+//             .expect("The GeoJson feature does not exist")
+//         .geometry
+//         .as_ref()
+//         .unwrap()
+//         .value;
+//
+//     let geojson_lat_val = match geojson_lat {
+//         Value::Point(v) => v,
+//         _ => panic!("No value for latitude"),
+//     };
+//
+//     assert_eq!(gtfs_lat, &&geojson_lat_val[1]);
+//
+//     let gtfs_long = &first_gtfs
+//         .longitude
+//         .as_ref()
+//         .unwrap();
+//
+//     let geojson_long = &geojson
+//         .features
+//         .first()
+//         .expect("The GeoJson feature does not exist")
+//         .geometry
+//         .as_ref()
+//         .unwrap()
+//         .value;
+//
+//     let geojson_long_val = match geojson_long {
+//         Value::Point(v) => v,
+//         _ => panic!("No value for latitude"),
+//     };
+//
+//     assert_eq!(gtfs_long, &&geojson_long_val[0]);
+//
+//     // timezone
+//     assert_eq!(json!(&first_gtfs.timezone), first_geojson["timezone"]);
+//
+//
+//     // wheelchair boarding
+//     let gtfs_wheelchair = &first_gtfs
+//         .wheelchair_boarding;
+//
+//     let gtfs_wheelchair_val = match gtfs_wheelchair {
+//         gtfs_structures::Availability::InformationNotAvailable => "unknown",
+//         gtfs_structures::Availability::Available => "available",
+//         gtfs_structures::Availability::NotAvailable => "not available",
+//     };
+//
+//
+//     assert_eq!(gtfs_wheelchair_val, first_geojson["wheelchair_boarding"]);
+// }
+
 #[test]
 fn with_code_test() {
     let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
