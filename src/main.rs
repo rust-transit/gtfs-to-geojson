@@ -158,11 +158,14 @@ fn main() {
 // This test aims to make sure that the GTFS and the GeoJson files are equivalent.
 fn simple_conversion() {
     // read a gtfs
-    let gtfs = Gtfs::new("test/gtfs/gtfs_46.zip").unwrap();
+    let gtfs = Gtfs::new("test/gtfs/gtfs.zip").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
 
     let default_err = String::from("Errrrrrr");
     let default_err_value = serde_json::to_value(&default_err).unwrap();
+
+    let first_gtfs = &gtfs.stops.values().nth(0);
+    let first_geojson = geojson.features.first();
 
     // Make sure that we have as many fields as in the GTFS
     assert_eq!(geojson.features.len(), gtfs.stops.len());
@@ -171,13 +174,12 @@ fn simple_conversion() {
     // we have the same..
 
     // name
-    let gtfs_name = &gtfs.stops.values().nth(0)
+    let gtfs_name = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .name;
 
 
-    let geojson_name = geojson.features
-                        .first()
+    let geojson_name = first_geojson
                         .expect("The GeoJson feature does not exist")
                         .properties
                         .as_ref()
@@ -191,11 +193,10 @@ fn simple_conversion() {
 
     // id
 
-    let gtfs_id = &gtfs.stops.values().nth(0)
+    let gtfs_id = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .id;
-    let geojson_id = geojson.features
-                        .first()
+    let geojson_id = first_geojson
                         .expect("The GeoJson feature does not exist")
                         .properties
                         .as_ref()
@@ -208,14 +209,13 @@ fn simple_conversion() {
     assert_eq!(gtfs_id, geojson_id );
 
     // code
-    let gtfs_code = &gtfs.stops.values().nth(0)
+    let gtfs_code = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .code
                         .as_ref()
                         .unwrap_or(&default_err)
                         .as_str();
-    let geojson_code = &geojson.features
-                        .first()
+    let geojson_code = &first_geojson
                         .expect("The GeoJson feature does not exist")
                         .properties
                         .as_ref()
@@ -228,11 +228,10 @@ fn simple_conversion() {
     assert_eq!(gtfs_code, geojson_code );
 
     // description
-    let gtfs_descrip = &gtfs.stops.values().nth(0)
+    let gtfs_descrip = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .description;
-    let geojson_descrip = geojson.features
-                        .first()
+    let geojson_descrip = first_geojson
                         .expect("The GeoJson feature does not exist")
                         .properties
                         .as_ref()
@@ -245,15 +244,14 @@ fn simple_conversion() {
     assert_eq!(gtfs_descrip, geojson_descrip );
 
     // parent station
-    let gtfs_parent_station = &gtfs.stops.values().nth(0)
+    let gtfs_parent_station = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .parent_station
                         .as_ref()
                         .unwrap_or(&default_err)
                         .as_str();
 
-    let geojson_parent_station = geojson.features
-                        .first()
+    let geojson_parent_station = first_geojson
                         .expect("The GeoJson feature does not exist")
                         .properties
                         .as_ref()
@@ -270,13 +268,12 @@ fn simple_conversion() {
     //     (Some(lon), Some(lat)) => Some(Geometry::new(Value::Point(vec![*lon, *lat]))),
     //     _ => None,
     // },
-    let gtfs_lat = &gtfs.stops.values().nth(0)
+    let gtfs_lat = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .latitude
                         .as_ref()
                         .unwrap();
-    let geojson_lat = &geojson.features
-                        .first()
+    let geojson_lat = &first_geojson
                         .expect("The GeoJson feature does not exist")
                         .geometry
                         .as_ref()
@@ -290,14 +287,13 @@ fn simple_conversion() {
 
     assert_eq!(gtfs_lat, &&geojson_lat_val[1]);
 
-    let gtfs_long = &gtfs.stops.values().nth(0)
+    let gtfs_long = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .longitude
                         .as_ref()
                         .unwrap();
 
-    let geojson_long = &geojson.features
-                        .first()
+    let geojson_long = &first_geojson
                         .expect("The GeoJson feature does not exist")
                         .geometry
                         .as_ref()
@@ -312,15 +308,14 @@ fn simple_conversion() {
     assert_eq!(gtfs_long, &&geojson_long_val[0]);
 
     // timezone
-    let gtfs_tz = &gtfs.stops.values().nth(0)
+    let gtfs_tz = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .timezone
                         .as_ref()
                         .unwrap_or(&default_err)
                         .as_str();
 
-    let geojson_tz = geojson.features
-                        .first()
+    let geojson_tz = first_geojson
                         .expect("The GeoJson feature does not exist")
                         .properties
                         .as_ref()
@@ -333,17 +328,17 @@ fn simple_conversion() {
     assert_eq!(gtfs_tz, &geojson_tz );
 
     // wheelchair boarding
-    let gtfs_wheelchair = &gtfs.stops.values().nth(0)
+    let gtfs_wheelchair = &first_gtfs
                         .expect("The GTFS does not have a name")
                         .wheelchair_boarding;
+
     let gtfs_wheelchair_val = match gtfs_wheelchair {
         gtfs_structures::Availability::InformationNotAvailable => "unknown",
         gtfs_structures::Availability::Available => "available",
         gtfs_structures::Availability::NotAvailable => "not available",
     };
 
-    let geojson_wheelchair = geojson.features
-                        .first()
+    let geojson_wheelchair = first_geojson
                         .expect("The GeoJson feature does not exist")
                         .properties
                         .as_ref()
