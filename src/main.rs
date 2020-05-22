@@ -1,4 +1,3 @@
-use std::fs;
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use gtfs_structures::Gtfs;
 use serde_json::{json, Map};
@@ -223,6 +222,6 @@ fn no_code_test() {
 
 #[test]
 #[should_panic]
-fn simple_conversion_panic(){
+fn simple_conversion_panic() {
     panic!("Whoops");
 }
