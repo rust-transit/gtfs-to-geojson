@@ -164,23 +164,26 @@ fn simple_conversion() {
     let default_err = String::from("Errrrrrr");
     let default_err_value = serde_json::to_value(&default_err).unwrap();
 
-    let first_gtfs = &gtfs.stops.values().nth(0);
-    let first_geojson = geojson.features.first();
+    let first_gtfs = &gtfs
+        .stops
+        .values()
+        .nth(0);
+    let first_geojson = geojson
+        .features
+        .first()
+        .expect("The GeoJson feature does not exist")
+        .properties
+        .as_ref()
+        .expect("The property has no information");
 
     // Make sure that we have as many fields as in the GTFS
     assert_eq!(geojson.features.len(), gtfs.stops.len());
 
-    // Make sure that for every element of the geojson,
-    // we have the same..
-
+    // Make sure that for every element of the geojson, we have the same..
     // name
     let gtfs_name = &first_gtfs.expect("The GTFS does not have a name").name;
 
     let geojson_name = first_geojson
-        .expect("The GeoJson feature does not exist")
-        .properties
-        .as_ref()
-        .expect("The property has no information")
         .get("name")
         .expect("Name has no value")
         .as_str()
@@ -189,13 +192,8 @@ fn simple_conversion() {
     assert_eq!(gtfs_name, geojson_name);
 
     // id
-
     let gtfs_id = &first_gtfs.expect("The GTFS does not have a name").id;
     let geojson_id = first_geojson
-        .expect("The GeoJson feature does not exist")
-        .properties
-        .as_ref()
-        .expect("The property has no information")
         .get("id")
         .expect("Id has no value")
         .as_str()
@@ -211,10 +209,6 @@ fn simple_conversion() {
         .unwrap()
         .as_str();
     let geojson_code = &first_geojson
-        .expect("The GeoJson feature does not exist")
-        .properties
-        .as_ref()
-        .expect("The property has no information")
         .get("code")
         .unwrap()
         .as_str()
@@ -227,10 +221,6 @@ fn simple_conversion() {
         .expect("The GTFS does not have a name")
         .description;
     let geojson_descrip = first_geojson
-        .expect("The GeoJson feature does not exist")
-        .properties
-        .as_ref()
-        .expect("The property has no information")
         .get("description")
         .expect("description has no value")
         .as_str()
@@ -247,10 +237,6 @@ fn simple_conversion() {
         .as_str();
 
     let geojson_parent_station = first_geojson
-        .expect("The GeoJson feature does not exist")
-        .properties
-        .as_ref()
-        .expect("The property has no information")
         .get("parent_station")
         .unwrap_or(&default_err_value)
         .as_str()
@@ -259,17 +245,14 @@ fn simple_conversion() {
     assert_eq!(gtfs_parent_station, &geojson_parent_station);
 
     //longitude and latitude
-    // geometry: match (&stop.longitude, &stop.latitude) {
-    //     (Some(lon), Some(lat)) => Some(Geometry::new(Value::Point(vec![*lon, *lat]))),
-    //     _ => None,
-    // },
     let gtfs_lat = &first_gtfs
         .expect("The GTFS does not have a name")
         .latitude
         .as_ref()
         .unwrap();
-    let geojson_lat = &first_geojson
-        .expect("The GeoJson feature does not exist")
+    let geojson_lat = &geojson.features
+            .first()
+            .expect("The GeoJson feature does not exist")
         .geometry
         .as_ref()
         .unwrap()
@@ -288,7 +271,9 @@ fn simple_conversion() {
         .as_ref()
         .unwrap();
 
-    let geojson_long = &first_geojson
+    let geojson_long = &geojson
+        .features
+        .first()
         .expect("The GeoJson feature does not exist")
         .geometry
         .as_ref()
@@ -311,10 +296,6 @@ fn simple_conversion() {
         .as_str();
 
     let geojson_tz = first_geojson
-        .expect("The GeoJson feature does not exist")
-        .properties
-        .as_ref()
-        .expect("The property has no information")
         .get("timezone")
         .unwrap_or(&default_err_value)
         .as_str()
@@ -334,20 +315,10 @@ fn simple_conversion() {
     };
 
     let geojson_wheelchair = first_geojson
-        .expect("The GeoJson feature does not exist")
-        .properties
-        .as_ref()
-        .expect("The property has no information")
         .get("wheelchair_boarding")
         .unwrap_or(&default_err_value)
         .as_str()
         .expect("description is not a string");
 
     assert_eq!(gtfs_wheelchair_val, geojson_wheelchair);
-}
-
-#[test]
-#[should_panic]
-fn simple_conversion_panic() {
-    panic!("Whoops");
 }
