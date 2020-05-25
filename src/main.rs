@@ -1,6 +1,6 @@
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use gtfs_structures::Gtfs;
-use serde_json::{Map,json};
+use serde_json::{json, Map};
 use std::fs;
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -158,51 +158,64 @@ fn main() {
 }
 
 #[test]
-fn with_code_test(){
+fn with_code_test() {
     let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
 
-    let given_feature = &geojson.features
+    let given_feature = &geojson
+        .features
         .into_iter()
-        .find( |f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop2"));
+        .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop2"));
 
-    assert_eq!(json!(given_feature.as_ref().unwrap().properties), json!({
-            "code": "0001",
-            "description": "",
-            "id": "stop2",
-            "name": "StopPoint",
-            "wheelchair_boarding": "unknown"
+    assert_eq!(
+        json!(given_feature.as_ref().unwrap().properties),
+        json!({
+        "code": "0001",
+        "description": "",
+        "id": "stop2",
+        "name": "StopPoint",
+        "wheelchair_boarding": "unknown"
 
-            }));
+        })
+    );
 
     // long and lat
-    assert_eq!(json!(given_feature.as_ref().unwrap().geometry), json!({
-            "coordinates":[2.449386,48.796058],
-            "type":"Point"
-            }
-    ));
-
+    assert_eq!(
+        json!(given_feature.as_ref().unwrap().geometry),
+        json!({
+                "coordinates":[2.449386,48.796058],
+                "type":"Point"
+                }
+        )
+    );
 }
 
 #[test]
-fn no_code_test(){
+fn no_code_test() {
     let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
 
-    let given_feature = &geojson.features
+    let given_feature = &geojson
+        .features
         .into_iter()
-        .find( |f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop1"));
+        .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop1"));
 
-    assert_eq!(json!(given_feature.as_ref().unwrap().properties), json!({
-                "description": "",
-                "id": "stop1",
-                "name": "Stop Area",
-                "wheelchair_boarding": "unknown"
-            }));
+    assert_eq!(
+        json!(given_feature.as_ref().unwrap().properties),
+        json!({
+            "description": "",
+            "id": "stop1",
+            "name": "Stop Area",
+            "wheelchair_boarding": "unknown"
+        })
+    );
 
-    assert_eq!(json!(given_feature.as_ref().unwrap().geometry), json!({
-            "coordinates":[2.449386,48.796058],
-            "type":"Point"
-            }
-    ));
+    assert_eq!(
+        json!(given_feature.as_ref().unwrap().geometry),
+        json!({
+                "coordinates":[2.449386,48.796058],
+                "type":"Point"
+                }
+        )
+    );
 }
