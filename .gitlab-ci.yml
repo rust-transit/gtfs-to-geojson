@@ -1,9 +1,10 @@
 image: 'rust:latest'
 
 stages:
-  - format
   - test
   - build
+  - format
+  - clippy
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
@@ -25,8 +26,12 @@ build:
 format:
   stage: format
   script:
-    - rustup component add rustfmt --toolchain 1.42.0-x86_64-unknown-linux-gnu
-    - cargo-fmt --all --verbose
+    - cargo fmt --all --verbose -- --write-mode=diff
+
+clippy:
+  stage: clippy
+  script:
+      - cargo clippy --all --verbose -- -D warnings
 
 cache:
   paths:
