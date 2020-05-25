@@ -259,24 +259,26 @@ fn main() {
 
 #[test]
 fn with_code_test(){
-    let gtfs = Gtfs::new("test/gtfs/gtfs/").unwrap();
+    use assert_approx_eq::assert_approx_eq;
+    let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
 
     let given_feature = &geojson.features
         .into_iter()
-        .find( |f| f.properties.as_ref().unwrap()["id"].as_str() == Some("S00093"));
+        .find( |f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop2"));
 
     assert_eq!(json!(given_feature.as_ref().unwrap().properties), json!({
-                "code" : "1111",
-                "description": "",
-                "id": "S00093",
-                "name": "ALBAS - ALBAS-Rivière Haute",
-                "wheelchair_boarding": "unknown"
+            "code": "0001",
+            "description": "",
+            "id": "stop2",
+            "name": "StopPoint",
+            "wheelchair_boarding": "unknown"
+
             }));
 
     // long and lat
     assert_eq!(json!(given_feature.as_ref().unwrap().geometry), json!({
-            "coordinates":[1.251495,44.47342],
+            "coordinates":[2.449386,48.796058],
             "type":"Point"
             }
     ));
@@ -285,22 +287,23 @@ fn with_code_test(){
 
 #[test]
 fn no_code_test(){
-    let gtfs = Gtfs::new("test/gtfs/gtfs/").unwrap();
+    use assert_approx_eq::assert_approx_eq;
+    let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
 
     let given_feature = &geojson.features
         .into_iter()
-        .find( |f| f.properties.as_ref().unwrap()["id"].as_str() == Some("S00291"));
+        .find( |f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop1"));
 
     assert_eq!(json!(given_feature.as_ref().unwrap().properties), json!({
                 "description": "",
-                "id": "S00291",
-                "name": "DOUELLE - DOUELLE-Bourg",
+                "id": "stop1",
+                "name": "Stop Area",
                 "wheelchair_boarding": "unknown"
             }));
 
     assert_eq!(json!(given_feature.as_ref().unwrap().geometry), json!({
-            "coordinates":[1.360587,44.471159],
+            "coordinates":[2.449386,48.796058],
             "type":"Point"
             }
     ));
