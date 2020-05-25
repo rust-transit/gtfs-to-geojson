@@ -266,7 +266,6 @@ fn with_code_test(){
         .into_iter()
         .find( |f| f.properties.as_ref().unwrap().get("id").unwrap().as_str() == Some("S00093"));
 
-
     assert_eq!(json!(given_feature.as_ref().unwrap().properties), json!({
                 "code" : "1111",
                 "description": "",
@@ -274,6 +273,13 @@ fn with_code_test(){
                 "name": "ALBAS - ALBAS-Rivière Haute",
                 "wheelchair_boarding": "unknown"
             }));
+
+    // long and lat
+    assert_eq!(json!(given_feature.as_ref().unwrap().geometry), json!({
+            "coordinates":[1.251495,44.47342],
+            "type":"Point"
+            }
+    ));
 
 }
 
@@ -284,8 +290,7 @@ fn no_code_test(){
 
     let given_feature = &geojson.features
         .into_iter()
-        .find( |f| f.properties.as_ref().unwrap().get("id").unwrap().as_str() == Some("S00291"));
-
+        .find( |f| f.properties.as_ref().unwrap()["id"].as_str() == Some("S00291"));
 
     assert_eq!(json!(given_feature.as_ref().unwrap().properties), json!({
                 "description": "",
@@ -293,4 +298,10 @@ fn no_code_test(){
                 "name": "DOUELLE - DOUELLE-Bourg",
                 "wheelchair_boarding": "unknown"
             }));
+
+    assert_eq!(json!(given_feature.as_ref().unwrap().geometry), json!({
+            "coordinates":[1.360587,44.471159],
+            "type":"Point"
+            }
+    ));
 }
