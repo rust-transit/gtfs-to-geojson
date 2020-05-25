@@ -264,7 +264,7 @@ fn with_code_test(){
 
     let given_feature = &geojson.features
         .into_iter()
-        .find( |f| f.properties.as_ref().unwrap().get("id").unwrap().as_str() == Some("S00093"));
+        .find( |f| f.properties.as_ref().unwrap()["id"].as_str() == Some("S00093"));
 
     assert_eq!(json!(given_feature.as_ref().unwrap().properties), json!({
                 "code" : "1111",
