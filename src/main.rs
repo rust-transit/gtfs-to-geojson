@@ -258,7 +258,7 @@ fn main() {
 // }
 
 #[test]
-fn with_code_test() {
+fn with_code_test(){
     let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
 
@@ -291,7 +291,7 @@ fn with_code_test() {
 }
 
 #[test]
-fn no_code_test() {
+fn no_code_test(){
     let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
     let geojson = convert_to_geojson(&gtfs, false);
 
