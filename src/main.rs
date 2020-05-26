@@ -1,7 +1,6 @@
 //! This crates aims to be a simple converter for GTFS to GeoJSON formats.
 
 use gtfs_structures::Gtfs;
-use serde_json::{json};
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -17,16 +16,6 @@ struct Opt {
         parse(from_os_str)
     )]
     file: PathBuf,
-
-    // Output file
-    #[structopt(
-        name = "json",
-        short = "o",
-        long = "output",
-        help = "Filename of the outputed json data. Doesn't need to exist beforehand. All existing data will be removed.",
-        parse(from_os_str)
-    )]
-    output: PathBuf,
 
     // To be verbose about what's going on.
     #[structopt(name = "verbose", short = "v", long = "verbose")]
@@ -114,10 +103,7 @@ pub mod converter {
 }
 
 pub mod utility {
-    use geojson::FeatureCollection;
     use gtfs_structures::Gtfs;
-    use std::fs;
-    use std::path::PathBuf;
 
     /// This function will print all of the stops contained in the GTFS file
     /// # Examples
@@ -160,29 +146,15 @@ pub mod utility {
             println!("------------------------------");
         }
     }
-
-    /// This function will save the FeatureCollection as a JSON output in the file given to it.
-    /// # Examples
-    /// ```
-    /// let geotype_collection = FeatureCollection::new();
-    /// let path = PathBuf::new();
-    /// save_to_file(geotype_collection , path);
-    /// ```
-    pub fn save_to_file(geotype_collection: &FeatureCollection, filename_geo: &PathBuf) {
-        println!("{}", geotype_collection);
-        fs::write(filename_geo, geotype_collection.to_string()).expect("Unable to write file");
-    }
 }
 
 fn main() {
     use crate::converter::convert_to_geojson;
-    use crate::utility::{print_stops, save_to_file};
 
     let opt = Opt::from_args();
 
     if opt.verbose {
         println!("GTFS input file: {:#?}", opt.file);
-        println!("GeoJSON output filename: {:#?}", opt.output);
     }
 
     let gtfs = Gtfs::new(
@@ -193,7 +165,7 @@ fn main() {
     .expect("The GTFS file is not well formated.");
 
     if opt.verbose {
-        print_stops(&gtfs);
+        utility::print_stops(&gtfs);
     }
 
     if opt.verbose {
@@ -202,70 +174,75 @@ fn main() {
 
     let stops_as_features = convert_to_geojson(&gtfs, opt.verbose);
 
-    save_to_file(&stops_as_features, &opt.output);
+    println!("{}", stops_as_features);
 }
 
-#[test]
-fn with_code_test() {
-    use crate::converter::convert_to_geojson;
-    let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
-    let geojson = convert_to_geojson(&gtfs, false);
+#[cfg(test)]
+mod test {
+    use serde_json::json;
 
-    let given_feature = &geojson
-        .features
-        .into_iter()
-        .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop2"));
+    #[test]
+    fn with_code_test() {
+        use crate::converter::convert_to_geojson;
+        let gtfs = gtfs_structures::Gtfs::new("test/basic/gtfs/").unwrap();
+        let geojson = convert_to_geojson(&gtfs, false);
 
-    assert_eq!(
-        json!(given_feature.as_ref().unwrap().properties),
-        json!({
-        "code": "0001",
-        "description": "",
-        "id": "stop2",
-        "name": "StopPoint",
-        "wheelchair_boarding": "unknown"
+        let given_feature = &geojson
+            .features
+            .into_iter()
+            .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop2"));
 
-        })
-    );
-
-    // long and lat
-    assert_eq!(
-        json!(given_feature.as_ref().unwrap().geometry),
-        json!({
-                "coordinates":[2.449386,48.796058],
-                "type":"Point"
-                }
-        )
-    );
-}
-
-#[test]
-fn no_code_test() {
-    use crate::converter::convert_to_geojson;
-    let gtfs = Gtfs::new("test/basic/gtfs/").unwrap();
-    let geojson = convert_to_geojson(&gtfs, false);
-
-    let given_feature = &geojson
-        .features
-        .into_iter()
-        .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop1"));
-
-    assert_eq!(
-        json!(given_feature.as_ref().unwrap().properties),
-        json!({
+        assert_eq!(
+            json!(given_feature.as_ref().unwrap().properties),
+            json!({
+            "code": "0001",
             "description": "",
-            "id": "stop1",
-            "name": "Stop Area",
+            "id": "stop2",
+            "name": "StopPoint",
             "wheelchair_boarding": "unknown"
-        })
-    );
 
-    assert_eq!(
-        json!(given_feature.as_ref().unwrap().geometry),
-        json!({
-                "coordinates":[2.449386,48.796058],
-                "type":"Point"
-                }
-        )
-    );
+            })
+        );
+
+        // long and lat
+        assert_eq!(
+            json!(given_feature.as_ref().unwrap().geometry),
+            json!({
+                    "coordinates":[2.449386,48.796058],
+                    "type":"Point"
+                    }
+            )
+        );
+    }
+
+    #[test]
+    fn no_code_test() {
+        use super::converter::convert_to_geojson;
+        let gtfs = gtfs_structures::Gtfs::new("test/basic/gtfs/").unwrap();
+        let geojson = convert_to_geojson(&gtfs, false);
+
+        let given_feature = &geojson
+            .features
+            .into_iter()
+            .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop1"));
+
+        assert_eq!(
+            json!(given_feature.as_ref().unwrap().properties),
+            json!({
+                "description": "",
+                "id": "stop1",
+                "name": "Stop Area",
+                "wheelchair_boarding": "unknown"
+            })
+        );
+
+        assert_eq!(
+            json!(given_feature.as_ref().unwrap().geometry),
+            json!({
+                    "coordinates":[2.449386,48.796058],
+                    "type":"Point"
+                    }
+            )
+        );
+    }
 }
