@@ -250,10 +250,14 @@ mod test {
         let gtfs = gtfs_structures::Gtfs::new("test/basic/gtfs/").unwrap();
         let geojson = convert_to_geojson(&gtfs, false);
 
-        let given_feature = &geojson
-            .features
-            .into_iter()
-            .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop2"));
+        let given_feature = &geojson.features.into_iter().find(|f| {
+            f.properties
+                .as_ref()
+                .unwrap()
+                .get("id")
+                .and_then(|id| id.as_str())
+                == Some("stop2")
+        });
 
         assert_eq!(
             json!(given_feature.as_ref().unwrap().properties),
@@ -271,7 +275,7 @@ mod test {
         assert_eq!(
             json!(given_feature.as_ref().unwrap().geometry),
             json!({
-                    "coordinates":[2.449386,48.796058],
+                    "coordinates":[1.0, 47.0],
                     "type":"Point"
                     }
             )
@@ -284,10 +288,14 @@ mod test {
         let gtfs = gtfs_structures::Gtfs::new("test/basic/gtfs/").unwrap();
         let geojson = convert_to_geojson(&gtfs, false);
 
-        let given_feature = &geojson
-            .features
-            .into_iter()
-            .find(|f| f.properties.as_ref().unwrap()["id"].as_str() == Some("stop1"));
+        let given_feature = &geojson.features.into_iter().find(|f| {
+            f.properties
+                .as_ref()
+                .unwrap()
+                .get("id")
+                .and_then(|id| id.as_str())
+                == Some("stop1")
+        });
 
         assert_eq!(
             json!(given_feature.as_ref().unwrap().properties),
@@ -302,9 +310,9 @@ mod test {
         assert_eq!(
             json!(given_feature.as_ref().unwrap().geometry),
             json!({
-                    "coordinates":[2.449386,48.796058],
+                    "coordinates":[0.0, 48.0],
                     "type":"Point"
-                    }
+                }
             )
         );
     }
