@@ -27,18 +27,11 @@ pub mod converter {
     use geojson::{Feature, FeatureCollection};
     use gtfs_structures::Gtfs;
     use serde_json::Map;
+    use std::collections::HashSet;
 
-    /// This function will take a GTFS data format and ouput a FeatureCollection, which can in turn, be printed by the utility module.
-    /// If the verbose argument if True, then it will also print each step of conversion.
-    /// # Examples
-    /// ```
-    /// let gtfs_data = Gtfs::new("tests/gtfs/gtfs_46.zip");
-    /// convert_to_geojson(gtfs_data, true);
-    /// ```
-    pub fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
+    fn extract_stops(gtfs: &Gtfs, verbose: bool) -> Vec<Feature> {
         // Convert the stops of the GTFS by mapping each field
-        let features = gtfs_data
-            .stops
+        gtfs.stops
             .values()
             .map(|stop| {
                 if verbose {
@@ -92,8 +85,78 @@ pub mod converter {
                     foreign_members: None,
                 }
             })
-            .collect();
+            .collect()
+    }
 
+    fn extract_trips_shapes(gtfs: &Gtfs) -> Vec<Feature> {
+        let mut shapes_id = HashSet::new();
+        gtfs.trips
+            .values()
+            .filter_map(|trip| {
+                trip.shape_id.as_ref().and_then(|shape_id| {
+                    if shapes_id.contains(shape_id) {
+                        None
+                    } else {
+                        shapes_id.insert(shape_id);
+                        let shape = gtfs.shapes.get(shape_id).map(|shapes| {
+                            shapes
+                                .iter()
+                                .map(|shape| vec![shape.longitude, shape.latitude])
+                                .collect::<geojson::LineStringType>()
+                        });
+
+                        let geom = shape
+                            .map(|geom| geojson::Geometry::new(geojson::Value::LineString(geom)));
+
+                        let properties = gtfs.routes.get(&trip.route_id).map(|route| {
+                            let mut properties = Map::new();
+                            properties.insert("route_id".to_string(), route.id.clone().into());
+                            properties.insert(
+                                "route_short_name".to_string(),
+                                route.short_name.clone().into(),
+                            );
+                            properties.insert(
+                                "route_long_name".to_string(),
+                                route.long_name.clone().into(),
+                            );
+                            if let Some(color) = route.route_color {
+                                properties.insert(
+                                    "route_color".to_string(),
+                                    format!("{:X}", color).into(),
+                                );
+                            }
+                            if let Some(color) = route.route_text_color {
+                                properties.insert(
+                                    "route_text_color".to_string(),
+                                    format!("{:X}", color).into(),
+                                );
+                            }
+                            properties
+                        });
+                        Some(Feature {
+                            bbox: None,
+                            geometry: geom,
+                            id: None,
+                            properties,
+                            foreign_members: None,
+                        })
+                    }
+                })
+            })
+            .collect()
+    }
+
+    /// This function will take a GTFS data format and ouput a FeatureCollection, which can in turn, be printed by the utility module.
+    /// If the verbose argument if True, then it will also print each step of conversion.
+    /// # Examples
+    /// ```
+    /// let gtfs_data = Gtfs::new("tests/gtfs/gtfs_46.zip");
+    /// convert_to_geojson(gtfs_data, true);
+    /// ```
+    pub fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
+        let mut features = extract_stops(gtfs_data, verbose);
+        let shape_features = extract_trips_shapes(gtfs_data);
+        features.extend(shape_features);
         FeatureCollection {
             bbox: None,
             features,
