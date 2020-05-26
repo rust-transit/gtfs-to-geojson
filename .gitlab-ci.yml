@@ -4,6 +4,7 @@ stages:
   - format
   - test
   - build
+  - clippy
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
@@ -27,6 +28,12 @@ format:
   script:
     - rustup component add rustfmt
     - cargo-fmt --all --verbose
+
+clippy:
+  stage: clippy
+  script:
+    - rustup component add clippy
+    - cargo clippy -- -D warnings
 
 cache:
   paths:
