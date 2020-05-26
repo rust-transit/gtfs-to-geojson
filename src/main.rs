@@ -120,15 +120,13 @@ pub mod converter {
                                 route.long_name.clone().into(),
                             );
                             if let Some(color) = route.route_color {
-                                properties.insert(
-                                    "route_color".to_string(),
-                                    format!("{:X}", color).into(),
-                                );
+                                properties
+                                    .insert("route_color".to_string(), format!("{}", color).into());
                             }
                             if let Some(color) = route.route_text_color {
                                 properties.insert(
                                     "route_text_color".to_string(),
-                                    format!("{:X}", color).into(),
+                                    format!("{}", color).into(),
                                 );
                             }
                             properties
@@ -335,8 +333,8 @@ mod test {
         assert_eq!(
             json!(given_feature.as_ref().unwrap().properties),
             json!({
-                "route_color": "RGB { #000000 }",
-                "route_text_color": "RGB { #FFFFFF }",
+                "route_color": "rgb(0,0,0)",
+                "route_text_color": "rgb(255,255,255)",
                 "route_id": "route1",
                 "route_long_name": "100",
                 "route_short_name": "100"
