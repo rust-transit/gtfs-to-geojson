@@ -1,7 +1,6 @@
 //! This crates aims to be a simple converter for GTFS to GeoJSON formats.
 
 use gtfs_structures::Gtfs;
-use serde_json::{json};
 use std::path::PathBuf;
 use structopt::StructOpt;
 
