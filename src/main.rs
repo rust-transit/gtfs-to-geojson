@@ -316,4 +316,40 @@ mod test {
             )
         );
     }
+
+    #[test]
+    fn shape_test() {
+        use super::converter::convert_to_geojson;
+        let gtfs = gtfs_structures::Gtfs::new("test/basic/gtfs/").unwrap();
+        let geojson = convert_to_geojson(&gtfs, false);
+
+        let given_feature = &geojson.features.into_iter().find(|f| {
+            f.properties
+                .as_ref()
+                .unwrap()
+                .get("route_id")
+                .and_then(|id| id.as_str())
+                == Some("route1")
+        });
+
+        assert_eq!(
+            json!(given_feature.as_ref().unwrap().properties),
+            json!({
+                "route_color": "RGB { #000000 }",
+                "route_text_color": "RGB { #FFFFFF }",
+                "route_id": "route1",
+                "route_long_name": "100",
+                "route_short_name": "100"
+            })
+        );
+
+        assert_eq!(
+            json!(given_feature.as_ref().unwrap().geometry),
+            json!({
+                    "coordinates":[[0.0,48.0], [1.0,47.0], [1.0,45.0], [2.0,44.0]],
+                    "type":"LineString"
+                }
+            )
+        );
+    }
 }
