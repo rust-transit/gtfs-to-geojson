@@ -109,7 +109,7 @@ pub mod converter {
 
     fn get_new_feature_from_shape(
         gtfs: &Gtfs,
-        shape_id: &String,
+        shape_id: &str,
         trip: &gtfs_structures::Trip,
     ) -> Feature {
         let shape = gtfs.shapes.get(shape_id).map(|shapes| {
@@ -134,7 +134,7 @@ pub mod converter {
     // Given a GTFS reference and a route_id reference, outputs useful properties from the route.
     fn get_route_properties(
         gtfs: &Gtfs,
-        route_id: &String,
+        route_id: &str,
     ) -> Option<Map<String, serde_json::value::Value>> {
         gtfs.routes.get(route_id).map(|route| {
             let mut properties = Map::new();
