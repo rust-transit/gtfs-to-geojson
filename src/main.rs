@@ -16,6 +16,14 @@ struct Opt {
         parse(from_os_str)
     )]
     file: PathBuf,
+    #[structopt(
+        name = "output",
+        short = "o",
+        long = "output",
+        help = "Path to the output file. If not present, geojson file is outputed in stdout",
+        parse(from_os_str)
+    )]
+    output_file: Option<PathBuf>,
 
     // To be verbose about what's going on.
     #[structopt(name = "verbose", short = "v", long = "verbose")]
@@ -178,6 +186,7 @@ pub mod converter {
 
 pub mod utility {
     use gtfs_structures::Gtfs;
+    use std::path::PathBuf;
 
     /// This function will print all of the stops contained in the GTFS file
     /// # Examples
@@ -220,6 +229,17 @@ pub mod utility {
             println!("------------------------------");
         }
     }
+
+    /// This function will save the FeatureCollection as a JSON output in the file given to it.
+    /// # Examples
+    /// ```
+    /// let geotype_collection = FeatureCollection::new();
+    /// let path = PathBuf::new();
+    /// save_to_file(geotype_collection , path);
+    /// ```
+    pub fn save_to_file(geotype_collection: &geojson::FeatureCollection, filename_geo: &PathBuf) {
+        std::fs::write(filename_geo, geotype_collection.to_string()).expect("Unable to write file");
+    }
 }
 
 fn main() {
@@ -248,7 +268,10 @@ fn main() {
 
     let stops_as_features = convert_to_geojson(&gtfs, opt.verbose);
 
-    println!("{}", stops_as_features);
+    match opt.output_file {
+        Some(f) => utility::save_to_file(&stops_as_features, &f),
+        None => println!("{}", stops_as_features)
+    }
 }
 
 #[cfg(test)]
