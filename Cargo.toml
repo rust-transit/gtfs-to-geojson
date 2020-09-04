@@ -1,6 +1,6 @@
 [package]
 name = "gtfs-geojson"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["N07070 <social@n07070.xyz>"]
 edition = "2018"
 description = "A simple converter for GTFS to GeoJSON formats"
