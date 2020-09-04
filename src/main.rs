@@ -27,18 +27,10 @@ struct Opt {
         parse(from_os_str)
     )]
     output_file: Option<PathBuf>,
-
-    // To be verbose about what's going on.
-    #[structopt(name = "verbose", short = "v", long = "verbose")]
-    verbose: bool,
 }
 
 fn main() {
     let opt = Opt::from_args();
-
-    if opt.verbose {
-        println!("GTFS input file: {:#?}", opt.file);
-    }
 
     let gtfs = Gtfs::new(
         opt.file
@@ -47,11 +39,7 @@ fn main() {
     )
     .expect("The GTFS file is not well formated.");
 
-    if opt.verbose {
-        println!("Converting the stops to Geotype structures...");
-    }
-
-    let stops_as_features = crate::converter::convert_to_geojson(&gtfs, opt.verbose);
+    let stops_as_features = crate::converter::convert_to_geojson(&gtfs);
 
     match opt.output_file {
         Some(f) => utility::save_to_file(&stops_as_features, &f),
@@ -67,7 +55,7 @@ mod test {
     fn with_code_test() {
         use crate::converter::convert_to_geojson;
         let gtfs = gtfs_structures::Gtfs::new("test/basic/gtfs/").unwrap();
-        let geojson = convert_to_geojson(&gtfs, false);
+        let geojson = convert_to_geojson(&gtfs);
 
         let given_feature = &geojson.features.into_iter().find(|f| {
             f.properties
@@ -105,7 +93,7 @@ mod test {
     fn no_code_test() {
         use super::converter::convert_to_geojson;
         let gtfs = gtfs_structures::Gtfs::new("test/basic/gtfs/").unwrap();
-        let geojson = convert_to_geojson(&gtfs, false);
+        let geojson = convert_to_geojson(&gtfs);
 
         let given_feature = &geojson.features.into_iter().find(|f| {
             f.properties
@@ -140,7 +128,7 @@ mod test {
     fn shape_test() {
         use super::converter::convert_to_geojson;
         let gtfs = gtfs_structures::Gtfs::new("test/basic/gtfs/").unwrap();
-        let geojson = convert_to_geojson(&gtfs, false);
+        let geojson = convert_to_geojson(&gtfs);
 
         let given_feature = &geojson.features.into_iter().find(|f| {
             f.properties

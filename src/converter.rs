@@ -4,16 +4,11 @@ use gtfs_structures::Gtfs;
 use serde_json::Map;
 use std::collections::HashSet;
 
-fn extract_stops(gtfs: &Gtfs, verbose: bool) -> Vec<Feature> {
+fn extract_stops(gtfs: &Gtfs) -> Vec<Feature> {
     // Convert the stops of the GTFS by mapping each field
     gtfs.stops
         .values()
         .map(|stop| {
-            if verbose {
-                println!("Stop {:?} - {:?} - {:?}", stop.name, stop.id, stop.code);
-                println!("Description {:?}", stop.description);
-            }
-
             let info = vec![
                 ("name", Some(stop.name.clone().into())),
                 ("id", Some(stop.id.clone().into())),
@@ -129,14 +124,13 @@ fn get_route_properties(
 }
 
 /// This function will take a GTFS data format and ouput a FeatureCollection, which can in turn, be printed by the utility module.
-/// If the verbose argument if True, then it will also print each step of conversion.
 /// # Examples
 /// ```
 /// let gtfs_data = Gtfs::new("tests/gtfs/gtfs_46.zip");
 /// convert_to_geojson(gtfs_data, true);
 /// ```
-pub fn convert_to_geojson(gtfs_data: &Gtfs, verbose: bool) -> FeatureCollection {
-    let mut features = extract_stops(gtfs_data, verbose);
+pub fn convert_to_geojson(gtfs_data: &Gtfs) -> FeatureCollection {
+    let mut features = extract_stops(gtfs_data);
     let shape_features = extract_trips_shapes(gtfs_data);
     features.extend(shape_features);
     FeatureCollection {
