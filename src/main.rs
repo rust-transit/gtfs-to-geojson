@@ -34,8 +34,6 @@ struct Opt {
 }
 
 fn main() {
-    use crate::converter::convert_to_geojson;
-
     let opt = Opt::from_args();
 
     if opt.verbose {
@@ -57,7 +55,7 @@ fn main() {
         println!("Converting the stops to Geotype structures...");
     }
 
-    let stops_as_features = convert_to_geojson(&gtfs, opt.verbose);
+    let stops_as_features = crate::converter::convert_to_geojson(&gtfs, opt.verbose);
 
     match opt.output_file {
         Some(f) => utility::save_to_file(&stops_as_features, &f),
