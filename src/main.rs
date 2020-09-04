@@ -48,10 +48,6 @@ fn main() {
     .expect("The GTFS file is not well formated.");
 
     if opt.verbose {
-        utility::print_stops(&gtfs);
-    }
-
-    if opt.verbose {
         println!("Converting the stops to Geotype structures...");
     }
 

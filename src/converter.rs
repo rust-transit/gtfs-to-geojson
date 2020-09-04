@@ -1,4 +1,3 @@
-
 use geojson::Value::Point;
 use geojson::{Feature, FeatureCollection};
 use gtfs_structures::Gtfs;
