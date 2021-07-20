@@ -34,10 +34,7 @@ fn extract_stops(gtfs: &Gtfs) -> Vec<Feature> {
                 ),
             ]
             .into_iter()
-            .filter_map(|(key, value)| match value {
-                None => None,
-                Some(v) => Some((key.to_string(), v)),
-            })
+            .filter_map(|(key, value)| value.map(|v| (key.to_string(), v)))
             .collect::<Map<String, serde_json::Value>>();
             // Add the geometry values
             Feature {
