@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 /// This function will save the FeatureCollection as a JSON output in the file given to it.
 /// # Examples
@@ -7,6 +7,6 @@ use std::path::PathBuf;
 /// let path = PathBuf::new();
 /// save_to_file(geotype_collection , path);
 /// ```
-pub fn save_to_file(geotype_collection: &geojson::FeatureCollection, filename_geo: &PathBuf) {
+pub fn save_to_file(geotype_collection: &geojson::FeatureCollection, filename_geo: &Path) {
     std::fs::write(filename_geo, geotype_collection.to_string()).expect("Unable to write file");
 }
