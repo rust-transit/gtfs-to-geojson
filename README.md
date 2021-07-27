@@ -8,4 +8,5 @@ This Rust crate is used to convert GTFS data to the GeoJSON format.
 * [Install Rust](https://www.rust-lang.org/tools/install)
 * Run the tests with `cargo test --all-features` (see [GitHub actions setup](https://github.com/rust-transit/gtfs-to-geojson/tree/main/.github/workflows))
 * Build the optimized binary with `cargo build --release`
-* Run the standalone program with `target/release/gtfs-geojson --help`
+* Run the standalone program with `cargo run --release -- --help`
+* To run the standalone program without cargo (e.g. when shipping the binary), run `target/release/gtfs-geojson --help`
