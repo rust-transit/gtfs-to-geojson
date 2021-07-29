@@ -1,6 +1,6 @@
 //! This crates aims to be a simple converter for GTFS to GeoJSON formats.
 
-use gtfs_structures::Gtfs;
+use gtfs_structures::GtfsReader;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -32,12 +32,14 @@ struct Opt {
 fn main() {
     let opt = Opt::from_args();
 
-    let gtfs = Gtfs::new(
-        opt.file
-            .to_str()
-            .expect("Invalid file path. Could not convert to string."),
-    )
-    .expect("The GTFS file is not well formated.");
+    let gtfs = GtfsReader::default()
+        .read_stop_times(false)
+        .read(
+            opt.file
+                .to_str()
+                .expect("Invalid file path. Could not convert to string."),
+        )
+        .expect("The GTFS file is not well formated.");
 
     let stops_as_features = crate::converter::convert_to_geojson(&gtfs);
 

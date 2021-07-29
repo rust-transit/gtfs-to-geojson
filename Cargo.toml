@@ -1,6 +1,6 @@
 [package]
 name = "gtfs-geojson"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["N07070 <social@n07070.xyz>"]
 edition = "2018"
 description = "A simple converter for GTFS to GeoJSON formats"
@@ -14,7 +14,7 @@ categories = ["data-structures"]
 
 [dependencies]
 
-gtfs-structures = "0.26"
+gtfs-structures = "0.27"
 geojson = "0.22"
 structopt = "0.3"
 geo-types = "0.7"
