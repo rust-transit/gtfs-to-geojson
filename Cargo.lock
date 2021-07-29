@@ -431,7 +431,7 @@ dependencies = [
 
 [[package]]
 name = "gtfs-geojson"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "geo-types",
  "geojson",
@@ -442,9 +442,9 @@ dependencies = [
 
 [[package]]
 name = "gtfs-structures"
-version = "0.26.0"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ccfb438f5ccefbb7bbaf216f4483499b4c5774a1b82c9376e2db3d2ee10efed8"
+checksum = "9ac7a2ea65bd1699322b80510c14ab10259a1691e920ceb3ca079d4623b356ac"
 dependencies = [
  "bytes 1.0.1",
  "chrono",
