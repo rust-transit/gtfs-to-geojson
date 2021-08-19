@@ -15,7 +15,7 @@ struct Opt {
         name = "gtfs",
         short = "i",
         long = "input",
-        help = "Path to the gtfs file. Can be a directory or a zip file",
+        help = "Path to the GTFS file (can be a directory or a zip file) or URL to an online GTFS file",
         parse(from_os_str)
     )]
     file: PathBuf,
