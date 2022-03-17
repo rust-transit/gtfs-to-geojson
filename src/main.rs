@@ -1,27 +1,27 @@
 //! This crates aims to be a simple converter for GTFS to GeoJSON formats.
 
+use clap::Parser;
 use gtfs_structures::GtfsReader;
 use std::path::PathBuf;
-use structopt::StructOpt;
 
 mod converter;
 mod utility;
 
-#[derive(StructOpt, Debug)]
-#[structopt(name = "basic")]
+#[derive(Parser, Debug)]
+#[clap(name = "basic")]
 struct Opt {
     // GTFS files
-    #[structopt(
+    #[clap(
         name = "gtfs",
-        short = "i",
+        short = 'i',
         long = "input",
         help = "Path to the gtfs file. Can be a directory or a zip file",
         parse(from_os_str)
     )]
     file: PathBuf,
-    #[structopt(
+    #[clap(
         name = "output",
-        short = "o",
+        short = 'o',
         long = "output",
         help = "Path to the output file. If not present, geojson file is outputed in stdout",
         parse(from_os_str)
@@ -30,7 +30,7 @@ struct Opt {
 }
 
 fn main() {
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
 
     let gtfs = GtfsReader::default()
         .read_stop_times(false)
