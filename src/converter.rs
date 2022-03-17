@@ -30,6 +30,7 @@ fn extract_stops(gtfs: &Gtfs) -> Vec<Feature> {
                         gtfs_structures::Availability::InformationNotAvailable => "unknown".into(),
                         gtfs_structures::Availability::Available => "available".into(),
                         gtfs_structures::Availability::NotAvailable => "not available".into(),
+                        gtfs_structures::Availability::Unknown(u) => u.to_string().into(),
                     }),
                 ),
             ]
