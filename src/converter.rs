@@ -111,12 +111,11 @@ fn get_route_properties(
             "route_long_name".to_string(),
             route.long_name.clone().into(),
         );
-        if let Some(color) = route.route_color {
-            properties.insert("route_color".to_string(), format!("{}", color).into());
-        }
-        if let Some(color) = route.route_text_color {
-            properties.insert("route_text_color".to_string(), format!("{}", color).into());
-        }
+        properties.insert("route_color".to_string(), format!("{}", route.color).into());
+        properties.insert(
+            "route_text_color".to_string(),
+            format!("{}", route.text_color).into(),
+        );
         properties
     })
 }
