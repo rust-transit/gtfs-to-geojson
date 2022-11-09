@@ -14,7 +14,7 @@ categories = ["data-structures"]
 
 [dependencies]
 
-gtfs-structures = "0.32"
+gtfs-structures = "0.32.2"
 geojson = "0.22"
 clap = { version = "3", features = ["derive"] }
 geo-types = "0.7"
