@@ -10,3 +10,11 @@ This Rust crate is used to convert GTFS data to the GeoJSON format.
 * Build the optimized binary with `cargo build --release`
 * Run the standalone program with `cargo run --release -- --help`
 * To run the standalone program without cargo (e.g. when shipping the binary), run `target/release/gtfs-geojson --help`
+
+## Build the Docker image
+
+This is using a specific Docker base image that includes AWS's Lambda Runtime API.
+
+```bash
+docker build -t gtfs-to-geojson .
+```
