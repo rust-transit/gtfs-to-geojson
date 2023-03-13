@@ -1,0 +1,7 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,wheelchair_boarding
+stop1,,"Stop Area",, 48.0 ,0.0,,,1,,
+stop2,0001,"StopPoint",,47.0,1.0,,,,,
+stop3,,"Stop Point child of 1",,45.0,1.0,,,0,1,
+stop4,,"StopPoint2",,44.0,2.0,,,,,
+stop5,,"Stop Point child of 1 bis",,44.5,2.5,,,0,1,
+stop6,,"Generic node",,,,,,3,1,
