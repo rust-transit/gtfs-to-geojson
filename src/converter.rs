@@ -57,18 +57,29 @@ fn extract_trips_shapes(gtfs: &Gtfs) -> Vec<Feature> {
     let mut shapes_id = HashSet::new();
     gtfs.trips
         .values()
-        .filter_map(|trip| {
-            trip.shape_id.as_ref().and_then(|shape_id| {
-                if shapes_id.insert(shape_id) {
-                    // new shape found
-                    Some(get_new_feature_from_shape(gtfs, shape_id, trip))
-                } else {
-                    // shape_id was already treated
-                    None
+        .filter_map(|trip| -> Option<Feature> {
+            match trip.shape_id {
+                Some(_) => {
+                    trip.shape_id.as_ref().and_then(|shape_id| {
+                        if shapes_id.insert(shape_id) {
+                            // new shape found
+                            Some(get_new_feature_from_shape(gtfs, shape_id, trip))
+                        } else {
+                            // shape_id was already treated
+                            None
+                        }
                 }
-            })
+            )},
+                None => {
+                    if shapes_id.insert(&trip.route_id) {
+                        Some(get_straight_line_feature_between_stops(gtfs, trip))
+                    } else {
+                        None
+                    }
+                },
+            }
         })
-        .collect()
+        .collect::<Vec<Feature>>()
 }
 
 fn get_new_feature_from_shape(
@@ -94,6 +105,27 @@ fn get_new_feature_from_shape(
         foreign_members: None,
     }
 }
+
+fn get_straight_line_feature_between_stops(
+    gtfs: &Gtfs,
+    trip: &gtfs_structures::Trip
+) -> Feature {
+    // let geom = trip.stop_times.iter().map(|stop_time| vec![stop_time.stop.longitude, stop_time.stop.latitude]).collect::<geojson::LineStringType>();
+    let shape = trip.stop_times
+        .iter()
+        .map(|stop_time| vec![stop_time.stop.longitude.unwrap(), stop_time.stop.latitude.unwrap()])
+        .collect::<geojson::LineStringType>();
+    let geom = geojson::Geometry::new(geojson::Value::LineString(shape));
+    let properties = get_route_properties(gtfs, &trip.route_id);
+    Feature {
+        bbox: None, 
+        geometry: Some(geom), 
+        id: None, 
+        properties, 
+        foreign_members: None
+    }
+}
+
 
 // Given a GTFS reference and a route_id reference, outputs useful properties from the route.
 fn get_route_properties(
