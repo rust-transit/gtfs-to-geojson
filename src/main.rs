@@ -32,6 +32,7 @@ struct Opt {
 fn main() {
     let opt = Opt::parse();
 
+    println!("Reading GTFS");
     let gtfs = GtfsReader::default()
         .read_stop_times(true)
         .read(
@@ -41,8 +42,10 @@ fn main() {
         )
         .expect("The GTFS file is not well formated.");
 
+    println!("Extracting Spatial features");
     let stops_as_features = crate::converter::convert_to_geojson(&gtfs);
 
+    println!("Saving GeoJSON");
     match opt.output_file {
         Some(f) => utility::save_to_file(&stops_as_features, &f),
         None => println!("{}", stops_as_features),
