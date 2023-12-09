@@ -4,7 +4,7 @@ use gtfs_structures::Gtfs;
 use serde_json::Map;
 use std::collections::HashSet;
 
-fn extract_stops(gtfs: &Gtfs) -> Vec<Feature> {
+pub fn extract_stops(gtfs: &Gtfs) -> Vec<Feature> {
     // Convert the stops of the GTFS by mapping each field
     gtfs.stops
         .values()
@@ -52,7 +52,7 @@ fn extract_stops(gtfs: &Gtfs) -> Vec<Feature> {
         .collect()
 }
 
-fn extract_trips_shapes(gtfs: &Gtfs) -> Vec<Feature> {
+pub fn extract_trips_shapes(gtfs: &Gtfs) -> Vec<Feature> {
     // The HashSet will contain shape_id already treated, to avoid duplicated features
     let mut shapes_id = HashSet::new();
     gtfs.trips
@@ -71,7 +71,7 @@ fn extract_trips_shapes(gtfs: &Gtfs) -> Vec<Feature> {
         .collect()
 }
 
-fn get_new_feature_from_shape(
+pub fn get_new_feature_from_shape(
     gtfs: &Gtfs,
     shape_id: &str,
     trip: &gtfs_structures::Trip,
@@ -96,7 +96,7 @@ fn get_new_feature_from_shape(
 }
 
 // Given a GTFS reference and a route_id reference, outputs useful properties from the route.
-fn get_route_properties(
+pub fn get_route_properties(
     gtfs: &Gtfs,
     route_id: &str,
 ) -> Option<Map<String, serde_json::value::Value>> {
