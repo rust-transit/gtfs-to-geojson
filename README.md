@@ -5,6 +5,7 @@ This Rust crate is used to convert GTFS data to the GeoJSON format.
 ## Installing Crate
 
 [Crate](https://crates.io/crates/gtfs-geojson)
+
 While the repo is named `gtfs-to-geojson` the crate is called `gtfs_geojson` and can me installed using 
 
 ```bash
