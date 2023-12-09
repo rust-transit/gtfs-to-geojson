@@ -7,15 +7,15 @@ description = "A simple converter for GTFS to GeoJSON formats"
 readme = "README.md"
 repository = "https://gitlab.com/CodeursEnLiberte/gtfs-to-geojson/"
 license = "MIT"
-keywords = ["gtfs","transport","geojson"]
+keywords = ["gtfs", "transport", "geojson"]
 categories = ["data-structures"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 
-gtfs-structures = "0.32"
-geojson = "0.22"
-clap = { version = "3", features = ["derive"] }
+gtfs-structures = "0.38.0"
+geojson = "0.24.1"
+clap = { version = "4.4.11", features = ["derive"] }
 geo-types = "0.7"
 serde_json = "1"
