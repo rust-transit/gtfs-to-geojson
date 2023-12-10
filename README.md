@@ -14,7 +14,7 @@ cargo add gtfs_geojson
 
 ## Functions
 
-The `gtfs_geojson` library use the `gtfs_structures` library and there types to convert gtfs files over to geojson.
+The `gtfs_geojson` library use the `gtfs_structures` library and its types to convert gtfs files over to geojson.
 
 ### extract_stops(&gtfs: &gtfs_structures::Gtfs) -> Vec<Feature>
 
