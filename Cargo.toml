@@ -1,21 +1,21 @@
 [package]
 name = "gtfs-geojson"
-version = "0.3.1"
+version = "0.4.0"
 authors = ["N07070 <social@n07070.xyz>"]
 edition = "2018"
 description = "A simple converter for GTFS to GeoJSON formats"
 readme = "README.md"
 repository = "https://gitlab.com/CodeursEnLiberte/gtfs-to-geojson/"
 license = "MIT"
-keywords = ["gtfs","transport","geojson"]
+keywords = ["gtfs", "transport", "geojson"]
 categories = ["data-structures"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 
-gtfs-structures = "0.32"
-geojson = "0.22"
-clap = { version = "3", features = ["derive"] }
-geo-types = "0.7"
+gtfs-structures = "0.38.0"
+geojson = "0.24.1"
+clap = { version = "4.4.11", features = ["derive"] }
+geo-types = "0.7.12"
 serde_json = "1"
