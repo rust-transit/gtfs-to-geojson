@@ -123,8 +123,8 @@ pub fn get_route_properties(
 /// This function will take a GTFS data format and ouput a FeatureCollection, which can in turn, be printed by the utility module.
 /// # Examples
 /// ```
-/// let gtfs_data = Gtfs::new("tests/gtfs/gtfs_46.zip");
-/// convert_to_geojson(gtfs_data, true);
+/// let gtfs_data = gtfs_structures::Gtfs::new("test/basic/gtfs").unwrap();
+/// gtfs_geojson::convert_to_geojson(&gtfs_data);
 /// ```
 pub fn convert_to_geojson(gtfs_data: &Gtfs) -> FeatureCollection {
     let mut features = extract_stops(gtfs_data);

@@ -1,8 +1,8 @@
 [package]
 name = "gtfs-geojson"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["N07070 <social@n07070.xyz>"]
-edition = "2018"
+edition = "2021"
 description = "A simple converter for GTFS to GeoJSON formats"
 readme = "README.md"
 repository = "https://gitlab.com/CodeursEnLiberte/gtfs-to-geojson/"
@@ -14,8 +14,8 @@ categories = ["data-structures"]
 
 [dependencies]
 
-gtfs-structures = "0.38.0"
+gtfs-structures = "0.41.0"
 geojson = "0.24.1"
-clap = { version = "4.4.11", features = ["derive"] }
+clap = { version = "4.5.1", features = ["derive"] }
 geo-types = "0.7.12"
 serde_json = "1"
