@@ -15,16 +15,14 @@ struct Opt {
         name = "gtfs",
         short = 'i',
         long = "input",
-        help = "Path to the GTFS file (can be a directory or a zip file) or URL to an online GTFS file",
-        parse(from_os_str)
+        help = "Path to the GTFS file (can be a directory or a zip file) or URL to an online GTFS file"
     )]
     file: PathBuf,
     #[clap(
         name = "output",
         short = 'o',
         long = "output",
-        help = "Path to the output file. If not present, geojson file is outputed in stdout",
-        parse(from_os_str)
+        help = "Path to the output file. If not present, geojson file is outputed in stdout"
     )]
     output_file: Option<PathBuf>,
 }
