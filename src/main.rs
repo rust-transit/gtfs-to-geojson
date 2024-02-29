@@ -70,7 +70,7 @@ mod test {
             json!(given_feature.as_ref().unwrap().properties),
             json!({
             "code": "0001",
-            "description": "",
+            "description": null,
             "id": "stop2",
             "name": "StopPoint",
             "wheelchair_boarding": "unknown"
@@ -107,7 +107,7 @@ mod test {
         assert_eq!(
             json!(given_feature.as_ref().unwrap().properties),
             json!({
-                "description": "",
+                "description": null,
                 "id": "stop1",
                 "name": "Stop Area",
                 "wheelchair_boarding": "unknown"
